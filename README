@@ -7,6 +7,8 @@ image:https://scrutinizer-ci.com/g/Yubico/php-u2flib-server/badges/quality-score
 
 === Introduction ===
 
+FORKED VERSION to provide PHP 7.4 Preloader Compatibility
+
 Serverside U2F library for PHP. Provides functionality for registering
 tokens and authentication with said tokens.
 
