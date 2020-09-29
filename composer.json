@@ -1,6 +1,6 @@
 {
   "name":"philetaylor/u2flib-server",
-  "description":"Library for U2F implementation",
+  "description":"Library for U2F implementation - FORKED FOR PHP 7.4 Preloader Compatibility",
   "homepage":"https://developers.yubico.com/php-u2flib-server",
   "license":"BSD-2-Clause",
   "require": {
