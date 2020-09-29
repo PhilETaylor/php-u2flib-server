@@ -1,4 +1,10 @@
 <?php
+/**
+ * Forked to provide compatibility with PHP 7.4 Preloading
+ * @author Phil Taylor <phil@phil-taylor.com>
+ * @see    https://github.com/PhilETaylor/php-u2flib-server
+ */
+
 /* Copyright (c) 2014 Yubico AB
  * All rights reserved.
  *
@@ -26,69 +32,69 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 namespace u2flib_server;
-
-/** Constant for the version of the u2f protocol */
-const U2F_VERSION = "U2F_V2";
-
-/** Constant for the type value in registration clientData */
-const REQUEST_TYPE_REGISTER = "navigator.id.finishEnrollment";
-
-/** Constant for the type value in authentication clientData */
-const REQUEST_TYPE_AUTHENTICATE = "navigator.id.getAssertion";
-
-/** Error for the authentication message not matching any outstanding
- * authentication request */
-const ERR_NO_MATCHING_REQUEST = 1;
-
-/** Error for the authentication message not matching any registration */
-const ERR_NO_MATCHING_REGISTRATION = 2;
-
-/** Error for the signature on the authentication message not verifying with
- * the correct key */
-const ERR_AUTHENTICATION_FAILURE = 3;
-
-/** Error for the challenge in the registration message not matching the
- * registration challenge */
-const ERR_UNMATCHED_CHALLENGE = 4;
-
-/** Error for the attestation signature on the registration message not
- * verifying */
-const ERR_ATTESTATION_SIGNATURE = 5;
-
-/** Error for the attestation verification not verifying */
-const ERR_ATTESTATION_VERIFICATION = 6;
-
-/** Error for not getting good random from the system */
-const ERR_BAD_RANDOM = 7;
-
-/** Error when the counter is lower than expected */
-const ERR_COUNTER_TOO_LOW = 8;
-
-/** Error decoding public key */
-const ERR_PUBKEY_DECODE = 9;
-
-/** Error user-agent returned error */
-const ERR_BAD_UA_RETURNING = 10;
-
-/** Error old OpenSSL version */
-const ERR_OLD_OPENSSL = 11;
-
-/** Error for the origin not matching the appId */
-const ERR_NO_MATCHING_ORIGIN = 12;
-
-/** Error for the type in clientData being invalid */
-const ERR_BAD_TYPE = 13;
-
-/** Error for bad user presence byte value */
-const ERR_BAD_USER_PRESENCE = 14;
-
-/** @internal */
-const PUBKEY_LEN = 65;
 
 class U2F
 {
+
+    /** Constant for the version of the u2f protocol */
+    const U2F_VERSION = "U2F_V2";
+
+    /** Constant for the type value in registration clientData */
+    const REQUEST_TYPE_REGISTER = "navigator.id.finishEnrollment";
+
+    /** Constant for the type value in authentication clientData */
+    const REQUEST_TYPE_AUTHENTICATE = "navigator.id.getAssertion";
+
+    /** Error for the authentication message not matching any outstanding
+     * authentication request */
+    const ERR_NO_MATCHING_REQUEST = 1;
+
+    /** Error for the authentication message not matching any registration */
+    const ERR_NO_MATCHING_REGISTRATION = 2;
+
+    /** Error for the signature on the authentication message not verifying with
+     * the correct key */
+    const ERR_AUTHENTICATION_FAILURE = 3;
+
+    /** Error for the challenge in the registration message not matching the
+     * registration challenge */
+    const ERR_UNMATCHED_CHALLENGE = 4;
+
+    /** Error for the attestation signature on the registration message not
+     * verifying */
+    const ERR_ATTESTATION_SIGNATURE = 5;
+
+    /** Error for the attestation verification not verifying */
+    const ERR_ATTESTATION_VERIFICATION = 6;
+
+    /** Error for not getting good random from the system */
+    const ERR_BAD_RANDOM = 7;
+
+    /** Error when the counter is lower than expected */
+    const ERR_COUNTER_TOO_LOW = 8;
+
+    /** Error decoding public key */
+    const ERR_PUBKEY_DECODE = 9;
+
+    /** Error user-agent returned error */
+    const ERR_BAD_UA_RETURNING = 10;
+
+    /** Error old OpenSSL version */
+    const ERR_OLD_OPENSSL = 11;
+
+    /** Error for the origin not matching the appId */
+    const ERR_NO_MATCHING_ORIGIN = 12;
+
+    /** Error for the type in clientData being invalid */
+    const ERR_BAD_TYPE = 13;
+
+    /** Error for bad user presence byte value */
+    const ERR_BAD_USER_PRESENCE = 14;
+
+    /** @internal */
+    const PUBKEY_LEN = 65;
+
     /** @var string  */
     private $appId;
 
@@ -117,7 +123,7 @@ class U2F
     public function __construct($appId, $attestDir = null, $facetIds = null)
     {
         if(OPENSSL_VERSION_NUMBER < 0x10000000) {
-            throw new Error('OpenSSL has to be at least version 1.0.0, this is ' . OPENSSL_VERSION_TEXT, ERR_OLD_OPENSSL);
+            throw new Error('OpenSSL has to be at least version 1.0.0, this is ' . OPENSSL_VERSION_TEXT, U2F::ERR_OLD_OPENSSL);
         }
         $this->appId = $appId;
         $this->attestDir = $attestDir;
@@ -168,7 +174,7 @@ class U2F
         }
 
         if( property_exists( $response, 'errorCode') && $response->errorCode !== 0 ) {
-            throw new Error('User-agent returned error. Error code: ' . $response->errorCode, ERR_BAD_UA_RETURNING );
+            throw new Error('User-agent returned error. Error code: ' . $response->errorCode, U2F::ERR_BAD_UA_RETURNING );
         }
 
         if( !is_bool( $includeCert ) ) {
@@ -181,25 +187,25 @@ class U2F
         $cli = json_decode($clientData);
 
         if($cli->challenge !== $request->challenge) {
-            throw new Error('Registration challenge does not match', ERR_UNMATCHED_CHALLENGE );
+            throw new Error('Registration challenge does not match', U2F::ERR_UNMATCHED_CHALLENGE );
         }
 
-        if(isset($cli->typ) && $cli->typ !== REQUEST_TYPE_REGISTER) {
-            throw new Error('ClientData type is invalid', ERR_BAD_TYPE);
+        if(isset($cli->typ) && $cli->typ !== U2F::REQUEST_TYPE_REGISTER) {
+            throw new Error('ClientData type is invalid', U2F::ERR_BAD_TYPE);
         }
 
         if(isset($cli->origin) && !in_array($cli->origin, $this->facetIds, true)) {
-            throw new Error('App ID does not match the origin', ERR_NO_MATCHING_ORIGIN);
+            throw new Error('App ID does not match the origin', U2F::ERR_NO_MATCHING_ORIGIN);
         }
 
         $registration = new Registration();
         $offs = 1;
-        $pubKey = substr($rawReg, $offs, PUBKEY_LEN);
-        $offs += PUBKEY_LEN;
+        $pubKey = substr($rawReg, $offs, U2F::PUBKEY_LEN);
+        $offs += U2F::PUBKEY_LEN;
         // decode the pubKey to make sure it's good
         $tmpKey = $this->pubkey_to_pem($pubKey);
         if($tmpKey === null) {
-            throw new Error('Decoding of public key failed', ERR_PUBKEY_DECODE );
+            throw new Error('Decoding of public key failed', U2F::ERR_PUBKEY_DECODE );
         }
         $registration->publicKey = base64_encode($pubKey);
         $khLen = $regData[$offs++];
@@ -222,12 +228,12 @@ class U2F
         }
         if($this->attestDir) {
             if(openssl_x509_checkpurpose($pemCert, -1, $this->get_certs()) !== true) {
-                throw new Error('Attestation certificate can not be validated', ERR_ATTESTATION_VERIFICATION );
+                throw new Error('Attestation certificate can not be validated', U2F::ERR_ATTESTATION_VERIFICATION );
             }
         }
 
         if(!openssl_pkey_get_public($pemCert)) {
-            throw new Error('Decoding of public key failed', ERR_PUBKEY_DECODE );
+            throw new Error('Decoding of public key failed', U2F::ERR_PUBKEY_DECODE );
         }
         $signature = substr($rawReg, $offs);
 
@@ -240,7 +246,7 @@ class U2F
         if(openssl_verify($dataToVerify, $signature, $pemCert, 'sha256') === 1) {
             return $registration;
         } else {
-            throw new Error('Attestation signature does not match', ERR_ATTESTATION_SIGNATURE );
+            throw new Error('Attestation signature does not match', U2F::ERR_ATTESTATION_SIGNATURE );
         }
     }
 
@@ -291,7 +297,7 @@ class U2F
         }
 
         if( property_exists( $response, 'errorCode') && $response->errorCode !== 0 ) {
-            throw new Error('User-agent returned error. Error code: ' . $response->errorCode, ERR_BAD_UA_RETURNING );
+            throw new Error('User-agent returned error. Error code: ' . $response->errorCode, U2F::ERR_BAD_UA_RETURNING );
         }
 
         /** @var object|null $req */
@@ -303,8 +309,8 @@ class U2F
         $clientData = $this->base64u_decode($response->clientData);
         $decodedClient = json_decode($clientData);
 
-        if(isset($decodedClient->typ) && $decodedClient->typ !== REQUEST_TYPE_AUTHENTICATE) {
-            throw new Error('ClientData type is invalid', ERR_BAD_TYPE);
+        if(isset($decodedClient->typ) && $decodedClient->typ !== U2F::REQUEST_TYPE_AUTHENTICATE) {
+            throw new Error('ClientData type is invalid', U2F::ERR_BAD_TYPE);
         }
 
         foreach ($requests as $req) {
@@ -319,10 +325,10 @@ class U2F
             $req = null;
         }
         if($req === null) {
-            throw new Error('No matching request found', ERR_NO_MATCHING_REQUEST );
+            throw new Error('No matching request found', U2F::ERR_NO_MATCHING_REQUEST );
         }
         if(isset($decodedClient->origin) && !in_array($decodedClient->origin, $this->facetIds, true)) {
-            throw new Error('App ID does not match the origin', ERR_NO_MATCHING_ORIGIN);
+            throw new Error('App ID does not match the origin', U2F::ERR_NO_MATCHING_ORIGIN);
         }
         foreach ($registrations as $reg) {
             if( !is_object( $reg ) ) {
@@ -335,11 +341,11 @@ class U2F
             $reg = null;
         }
         if($reg === null) {
-            throw new Error('No matching registration found', ERR_NO_MATCHING_REGISTRATION );
+            throw new Error('No matching registration found', U2F::ERR_NO_MATCHING_REGISTRATION );
         }
         $pemKey = $this->pubkey_to_pem($this->base64u_decode($reg->publicKey));
         if($pemKey === null) {
-            throw new Error('Decoding of public key failed', ERR_PUBKEY_DECODE );
+            throw new Error('Decoding of public key failed', U2F::ERR_PUBKEY_DECODE );
         }
 
         $signData = $this->base64u_decode($response->signatureData);
@@ -349,9 +355,9 @@ class U2F
         $signature = substr($signData, 5);
 
         if(openssl_verify($dataToVerify, $signature, $pemKey, 'sha256') === 1) {
-            $upb = unpack("Cupb", substr($signData, 0, 1)); 
-            if($upb['upb'] !== 1) { 
-                throw new Error('User presence byte value is invalid', ERR_BAD_USER_PRESENCE );
+            $upb = unpack("Cupb", substr($signData, 0, 1));
+            if($upb['upb'] !== 1) {
+                throw new Error('User presence byte value is invalid', U2F::ERR_BAD_USER_PRESENCE );
             }
             $ctr = unpack("Nctr", substr($signData, 1, 4));
             $counter = $ctr['ctr'];
@@ -360,10 +366,10 @@ class U2F
                 $reg->counter = $counter;
                 return self::castObjectToRegistration($reg);
             } else {
-                throw new Error('Counter too low.', ERR_COUNTER_TOO_LOW );
+                throw new Error('Counter too low.', U2F::ERR_COUNTER_TOO_LOW );
             }
         } else {
-            throw new Error('Authentication failed', ERR_AUTHENTICATION_FAILURE );
+            throw new Error('Authentication failed', U2F::ERR_AUTHENTICATION_FAILURE );
         }
     }
 
@@ -433,7 +439,7 @@ class U2F
      */
     private function pubkey_to_pem($key)
     {
-        if(strlen($key) !== PUBKEY_LEN || $key[0] !== "\x04") {
+        if(strlen($key) !== U2F::PUBKEY_LEN || $key[0] !== "\x04") {
             return null;
         }
 
@@ -493,7 +499,7 @@ class U2F
 class RegisterRequest
 {
     /** @var string Protocol version */
-    public $version = U2F_VERSION;
+    public $version = U2F::U2F_VERSION;
 
     /** @var string Registration challenge */
     public $challenge;
@@ -521,7 +527,7 @@ class RegisterRequest
 class SignRequest
 {
     /** @var string Protocol version */
-    public $version = U2F_VERSION;
+    public $version = U2F::U2F_VERSION;
 
     /** @var string Authentication challenge */
     public $challenge = '';

@@ -67,7 +67,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_ATTESTATION_VERIFICATION
+   * @expectedExceptionCode 6
    */
   public function testDoRegisterAttestFail() {
     $this->u2f = new u2flib_server\U2F("http://demo.example.com", __DIR__ . "/../tests/certs");
@@ -78,7 +78,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_ATTESTATION_SIGNATURE
+   * @expectedExceptionCode 5
    */
   public function testDoRegisterFail2() {
     $req = json_decode('{"version":"U2F_V2","challenge":"yKA0x075tjJ-GE7fKTfnzTOSaNUOWQxRd9TWz5aFOg8","appId":"http://demo.example.com"}');
@@ -88,7 +88,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_UNMATCHED_CHALLENGE
+   * @expectedExceptionCode 4
    */
   public function testDoRegisterFail() {
     $req = json_decode('{"version":"U2F_V2","challenge":"YKA0X075tjJ-GE7fKTfnzTOSaNUOWQxRd9TWz5aFOg8","appId":"http://demo.example.com"}');
@@ -118,7 +118,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_PUBKEY_DECODE
+   * @expectedExceptionCode 9
    */
   public function testDoRegisterBadKeyInCert() {
     $req = json_decode('{"version":"U2F_V2","challenge":"yKA0x075tjJ-GE7fKTfnzTOSaNUOWQxRd9TWz5aFOg8","appId":"http://demo.example.com"}');
@@ -128,7 +128,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_PUBKEY_DECODE
+   * @expectedExceptionCode 9
    */
   public function testDoRegisterBadKey() {
     $req = json_decode('{"version":"U2F_V2","challenge":"yKA0x075tjJ-GE7fKTfnzTOSaNUOWQxRd9TWz5aFOg8","appId":"http://demo.example.com"}');
@@ -158,7 +158,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_BAD_UA_RETURNING
+   * @expectedExceptionCode 10
    */
   public function testDoRegisterUAError() {
     $req = json_decode('{"version":"U2F_V2","challenge":"yKA0x075tjJ-GE7fKTfnzTOSaNUOWQxRd9TWz5aFOg8","appId":"http://demo.example.com"}');
@@ -205,7 +205,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_COUNTER_TOO_LOW
+   * @expectedExceptionCode 8
    */
   public function testDoAuthenticateCtrFail() {
     $reqs = array(json_decode('{"version":"U2F_V2","challenge":"fEnc9oV79EaBgK5BoNERU5gPKM2XGYWrz4fUjgc0Q7g","keyHandle":"CTUayZo8hCBeC-sGQJChC0wW-bBg99bmOlGCgw8XGq4dLsxO3yWh9mRYArZxocP5hBB1pEGB3bbJYiM-5acc5w","appId":"http://demo.example.com"}'));
@@ -216,7 +216,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_AUTHENTICATION_FAILURE
+   * @expectedExceptionCode 3
    */
   public function testDoAuthenticateFail() {
     $reqs = array(json_decode('{"version":"U2F_V2","challenge":"fEnc9oV79EaBgK5BoNERU5gPKM2XGYWrz4fUjgc0Q7g","keyHandle":"CTUayZo8hCBeC-sGQJChC0wW-bBg99bmOlGCgw8XGq4dLsxO3yWh9mRYArZxocP5hBB1pEGB3bbJYiM-5acc5w","appId":"http://demo.example.com"}'));
@@ -227,7 +227,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_NO_MATCHING_REQUEST
+   * @expectedExceptionCode 1
    */
   public function testDoAuthenticateWrongReq() {
     $reqs = array(json_decode('{"version":"U2F_V2","challenge":"fEnc9oV79EaBgK5BoNERU5gPKM2XGYWrz4fUjgc0Q7g","keyHandle":"cTUayZo8hCBeC-sGQJChC0wW-bBg99bmOlGCgw8XGq4dLsxO3yWh9mRYArZxocP5hBB1pEGB3bbJYiM-5acc5w","appId":"http://demo.example.com"}'));
@@ -238,7 +238,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_NO_MATCHING_REGISTRATION
+   * @expectedExceptionCode 2
    */
   public function testDoAuthenticateWrongReg() {
     $reqs = array(json_decode('{"version":"U2F_V2","challenge":"fEnc9oV79EaBgK5BoNERU5gPKM2XGYWrz4fUjgc0Q7g","keyHandle":"CTUayZo8hCBeC-sGQJChC0wW-bBg99bmOlGCgw8XGq4dLsxO3yWh9mRYArZxocP5hBB1pEGB3bbJYiM-5acc5w","appId":"http://demo.example.com"}'));
@@ -249,7 +249,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_PUBKEY_DECODE
+   * @expectedExceptionCode 9
    */
   public function testDoAuthenticateBadKey() {
     $reqs = array(json_decode('{"version":"U2F_V2","challenge":"fEnc9oV79EaBgK5BoNERU5gPKM2XGYWrz4fUjgc0Q7g","keyHandle":"CTUayZo8hCBeC-sGQJChC0wW-bBg99bmOlGCgw8XGq4dLsxO3yWh9mRYArZxocP5hBB1pEGB3bbJYiM-5acc5w","appId":"http://demo.example.com"}'));
@@ -293,7 +293,7 @@ class U2FTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException u2flib_server\Error
-   * @expectedExceptionCode u2flib_server\ERR_BAD_UA_RETURNING
+   * @expectedExceptionCode 10
    */
   public function testDoAuthenticateUAError() {
     $reqs = array(json_decode('{"version":"U2F_V2","challenge":"fEnc9oV79EaBgK5BoNERU5gPKM2XGYWrz4fUjgc0Q7g","keyHandle":"CTUayZo8hCBeC-sGQJChC0wW-bBg99bmOlGCgw8XGq4dLsxO3yWh9mRYArZxocP5hBB1pEGB3bbJYiM-5acc5w","appId":"http://demo.example.com"}'));
